@@ -51,7 +51,7 @@ function init() {
 
   /////////////////////////////////
   //scene setup
-  scene = new THREE.Scene();                                                      // scene creation
+  scene = new THREE.Scene(), camera;                                              // scene creation
   var W = window.innerWidth, H = window.innerHeight;                              // scene size
   //camera setup
   camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
@@ -67,24 +67,19 @@ function init() {
   scene.add(camera);                                                              // camera to scene
   controls.addEventListener( 'change', render );                                  // control adjustments
 	controls.screenSpacePanning = false;
-  controls.enableDamping = true;   //damping
-  controls.dampingFactor = 0.25;   //damping inertia
-  controls.enableZoom = false;      //Zooming
-  controls.autoRotate = false;       // enable rotation
+  controls.enableDamping = true;                                                  //damping
+  controls.dampingFactor = 0.25;                                                  //damping inertia
+  controls.enableZoom = false;                                                    //Zooming
+  controls.autoRotate = false;                                                    // enable rotation
 
-  controls.minPolarAngle = Math.PI / 2 ; // radians
-  controls.maxPolarAngle = Math.PI / 2 // radians
-
-  controls.minAzimuthAngle = -Math.PI / 2;
+  controls.minPolarAngle = Math.PI / 2 ;
+  controls.maxPolarAngle = Math.PI / 2 ;
+  controls.minAzimuthAngle = Math.PI / 2;
   controls.maxAzimuthAngle = Math.PI / 2;
-
-  
-
 
 	//controls.minDistance = 300, controls.maxDistance = 700;                         // scroll limiting
   controls.addEventListener("change", () => {
-      if (this.renderer) this.renderer.render(this.scene, camera);
-    });
+  if (this.renderer) this.renderer.render(this.scene, camera)});
   /////////////////////////////////
 
 
