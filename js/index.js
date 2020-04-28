@@ -20,11 +20,6 @@ var orbitalControl = new THREE.OrbitControls(camera, renderer);                 
 var controls = new THREE.OrbitControls( camera, renderer);                        // camera to renderer
     controls.addEventListener( 'change', render );                                //control listening
 /////////////////////////////////
-
-
-
-
-/////////////////////////////////
 // song tracking variables
 var beatspersecond = 117, currentbeat = 0, ticker;
 var clock = new THREE.Clock;
@@ -45,8 +40,7 @@ function init() {
   // predone render shit #octo&particles
   renderer = new THREE.WebGLRenderer;                                             // actual renderer call
   renderer.setPixelRatio((window.devicePixelRatio) ? window.devicePixelRatio : 1);
-  renderer.setSize(window.innerWidth, window.innerHeight);                        // window resize
-  renderer.setClearColor(0x000000, 1);                                            // default background render
+  renderer.setSize(window.innerWidth, window.innerHeight);                        // window resize                                       // default background render
   document.getElementById('ThreeJS').appendChild(renderer.domElement);
 
   /////////////////////////////////
@@ -60,52 +54,30 @@ function init() {
 
   /////////////////////////////////
   // control setup
-  controls = new THREE.OrbitControls(camera);                                     // centeralising the camera
+  controls = new THREE.OrbitControls(camera, renderer.domElement);                                     // centeralising the camera
   controls.target = new THREE.Vector3(500, 200, 500);                             // controls
   controls.addEventListener('change', render);                                    // renderer based on controls
   // control assignments
   scene.add(camera);                                                              // camera to scene
-  controls.addEventListener( 'change', render );                                  // control adjustments
 	controls.screenSpacePanning = false;
   controls.enableDamping = true;                                                  //damping
   controls.dampingFactor = 0.25;                                                  //damping inertia
-  controls.enableZoom = false;                                                    //Zooming
-  controls.autoRotate = false;                                                    // enable rotation
-
   controls.minPolarAngle = Math.PI / 2 ;
   controls.maxPolarAngle = Math.PI / 2 ;
-  controls.minAzimuthAngle = Math.PI / 2;
-  controls.maxAzimuthAngle = Math.PI / 2;
-
-	//controls.minDistance = 300, controls.maxDistance = 700;                         // scroll limiting
+  controls.minAzimuthAngle = 0;
+  controls.maxAzimuthAngle = Math.PI * 0.5;
+	//controls.minDistance = 300, controls.maxDistance = 700;                       // scroll limiting
   controls.addEventListener("change", () => {
   if (this.renderer) this.renderer.render(this.scene, camera)});
-  /////////////////////////////////
-
-
 
 //=================================================
 // SCENE creation /////////////////////////////////
 //=================================================
 
-  //var geometry = new THREE.BoxGeometry(100, 100, 100);
-  //var material = new THREE.MeshPhongMaterial({shininess: 1});
-  //mesh = new THREE.Mesh( geometry, material );
-  //scene.add( mesh );
-
   var light1 = new THREE.AmbientLight(0xff0000, 0.5);
   scene.add(light1);
 
-
   // CROSS OBJECT CREATION
-  cross = new THREE.OBJLoader();
-  var crossMaterial = new THREE.MeshPhongMaterial({
-    reflectivity: 3.9, shininess: 900, specular: 0xffffff, wireframe: true });
-  // CROSS VALUE ASIGNMENT
-  cross.load("cross.obj", function(mesh){ mesh.traverse(function(node){
-      if( node instanceof THREE.Mesh ){ node.material = crossMaterial }});
-    //scene.add(mesh);
-    mesh.scale.set(50, 50, 50), mesh.position.set(0, -15, 0), mesh.rotation.set(0.2, 0, 0)});
   var crosspointsgeometry = new THREE.Geometry(); // CROSS GEOMETRY STORAGE
 
   //TOP Angle fixes                 L                                                       DEFAULTS R;    DEFAULTS R;
@@ -119,8 +91,8 @@ function init() {
 
   /////////////////////////////////
   //line drawing <<LEFT>>                              L+R  U+D  B+F
-  crosspointsgeometry.vertices.push( new THREE.Vector3( -30, -35, 95 ) );         //bottom left corner .
-  crosspointsgeometry.vertices.push( new THREE.Vector3( -17, 55, -17 ) );
+  crosspointsgeometry.vertices.push( new THREE.Vector3( -30, -35, 95 ) );         //bottom left corner .  A
+  crosspointsgeometry.vertices.push( new THREE.Vector3( -17, 55, -17 ) );         //                      B
   crosspointsgeometry.vertices.push( new THREE.Vector3( -57, 55, -17 ) );         //bottom left corner <
   crosspointsgeometry.vertices.push( new THREE.Vector3( -52, 71, -37 ) );         //top left corner <
   crosspointsgeometry.vertices.push( new THREE.Vector3( -15, 71, -37 ) );
@@ -150,7 +122,6 @@ function init() {
   //top right under
   crosspointsgeometry.vertices.push( new THREE.Vector3( 52, 30, -37 ) );          // below bottom right corner >
   crosspointsgeometry.vertices.push( new THREE.Vector3( 24.2, 30, -37 ) );        // below bottom right corner >
-
       //top left under <<RETURN>>
       crosspointsgeometry.vertices.push( new THREE.Vector3( 17, 55, -17 ) );      // VERTIAL LINE DRAW EQUAL TO A1
       crosspointsgeometry.vertices.push( new THREE.Vector3( 30, -35, 95 ) );      // bottom right corner .
@@ -177,11 +148,6 @@ function init() {
   var crosspointsmesh = new THREE.Mesh( crosspoints.geometry, crosspointsmaterial );
   scene.add( crosspointsmesh );                                                   // creation
 
-  //
-
-
-
-
   document.body.appendChild(renderer.domElement);
 } // FUNCTION init END
 
@@ -195,12 +161,13 @@ function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-  }
+}
 
 /////////////////////////////////
 // Animation camera calling
 function animate() {
     requestAnimationFrame( animate );
+    renderer.render(scene, camera);
     camera.lookAt( scene.position ), camera.updateMatrixWorld();
     controls.update();
     update(), render();
@@ -225,12 +192,11 @@ function update() { // start
 
 /////////////////////////////////
 // Final renderer
-renderer.setAnimationLoop(() => {
+render.setAnimationLoop(() => {
   update();
 });
 
 function render(){ // start
-  renderer.render(scene, camera);
 } // FUNCTION Render END
 
 /////////////////////////////////
